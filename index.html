@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>二評背誦卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+  :root{color-scheme:light dark;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+  *{margin:0}
+  html,body{background:#eef1f4}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+
+  :root{
+    --bg:#eef1f4;
+    --surface:#ffffff;
+    --surface-2:#f6f8fa;
+    --ink:#182230;
+    --muted:#586374;
+    --faint:#8a94a3;
+    --line:#dfe4ea;
+    --line-strong:#cbd3dc;
+    --act-ink:#8a5a06;
+    --act-bg:rgba(240,180,40,.18);
+    --trauma:#d1493f;
+    --trauma-soft:rgba(209,73,63,.10);
+    --nontrauma:#0d7a84;
+    --nontrauma-soft:rgba(13,122,132,.10);
+    --shadow:0 1px 2px rgba(20,30,45,.05),0 6px 20px rgba(20,30,45,.06);
+    --accent:var(--trauma);
+    --accent-soft:var(--trauma-soft);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12161c;
+      --surface:#1a2029;
+      --surface-2:#20262f;
+      --ink:#e8ecf1;
+      --muted:#a2acba;
+      --faint:#6c7683;
+      --line:#2b333d;
+      --line-strong:#3a434f;
+      --act-ink:#f0c674;
+      --act-bg:rgba(240,180,40,.13);
+      --trauma:#e5726a;
+      --trauma-soft:rgba(229,114,106,.14);
+      --nontrauma:#33a7b1;
+      --nontrauma-soft:rgba(51,167,177,.14);
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12161c;
+    --surface:#1a2029;
+    --surface-2:#20262f;
+    --ink:#e8ecf1;
+    --muted:#a2acba;
+    --faint:#6c7683;
+    --line:#2b333d;
+    --line-strong:#3a434f;
+    --act-ink:#f0c674;
+    --act-bg:rgba(240,180,40,.13);
+    --trauma:#e5726a;
+    --trauma-soft:rgba(229,114,106,.14);
+    --nontrauma:#33a7b1;
+    --nontrauma-soft:rgba(51,167,177,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    font-size:14px;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding-inline:16px;
+    padding-block:28px 56px;
+  }
+
+  header{margin-bottom:22px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--faint);font-weight:700;margin:0 0 6px;
+  }
+  h1{
+    font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    font-weight:900;
+    font-size:clamp(28px,7vw,40px);
+    letter-spacing:.02em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .sub{color:var(--muted);font-size:14px;margin:8px 0 0}
+  .legend{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:14px;font-size:13px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);
+    padding:6px 12px;border-radius:999px;box-shadow:var(--shadow);
+  }
+  .legend .act{padding:1px 8px}
+
+  .controls{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
+    align-items:center;margin:22px 0 20px;
+  }
+  .seg{
+    display:inline-flex;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:12px;padding:4px;gap:2px;
+  }
+  .seg button{
+    font-family:inherit;font-size:14px;font-weight:700;
+    border:0;background:transparent;color:var(--muted);
+    padding:8px 16px;border-radius:9px;cursor:pointer;
+    transition:color .15s,background .15s;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .seg .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.55}
+  #deckSeg button[data-deck="trauma"] .dot{background:var(--trauma);opacity:1}
+  #deckSeg button[data-deck="nontrauma"] .dot{background:var(--nontrauma);opacity:1}
+  .seg button[aria-pressed="true"]{
+    background:var(--surface);color:var(--ink);
+    box-shadow:0 1px 2px rgba(20,30,45,.12);
+  }
+
+  .deck-head{
+    display:flex;align-items:baseline;gap:12px;margin:0 0 4px;
+  }
+  .deck-head h2{
+    font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;font-weight:900;
+    font-size:22px;margin:0;color:var(--accent);
+  }
+  .deck-head .flow{
+    font-size:12.5px;font-weight:700;letter-spacing:.14em;
+    color:var(--faint);
+  }
+  .deck-note{font-size:13px;color:var(--muted);margin:0 0 18px}
+
+  .deck{list-style:none;margin:0;padding:0}
+  .card{
+    position:relative;
+    display:flex;gap:0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:var(--accent);opacity:.9;
+  }
+  .rail{
+    position:relative;flex:0 0 62px;
+    display:flex;flex-direction:column;align-items:center;
+    padding:20px 0;
+  }
+  .rail::after{
+    content:"";position:absolute;left:50%;transform:translateX(-50%);
+    top:0;bottom:0;width:2px;background:var(--line-strong);z-index:0;
+  }
+  .card:first-child .rail::after{top:42px}
+  .card:last-child .rail::after{bottom:calc(100% - 42px)}
+  .badge{
+    position:relative;z-index:1;
+    width:44px;height:44px;border-radius:50%;
+    background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;font-weight:900;font-size:20px;
+    box-shadow:0 2px 6px rgba(20,30,45,.18);
+  }
+  .step-no{
+    position:relative;z-index:1;margin-top:6px;
+    font-size:11px;font-weight:700;letter-spacing:.1em;
+    color:var(--faint);background:var(--surface);padding:0 4px;
+  }
+  .body{flex:1 1 auto;padding:18px 20px 18px 6px;min-width:0}
+  .region{
+    display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;
+  }
+  .region .name{
+    font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;font-weight:700;font-size:17px;
+    color:var(--ink);
+  }
+  .region .tag{
+    font-size:11px;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);padding:2px 9px;border-radius:999px;
+    letter-spacing:.04em;
+  }
+  .detail{font-size:15.5px;color:var(--ink);margin:0}
+  .detail p{margin:0}
+  .detail p + p{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-strong)}
+  .act{
+    background:var(--act-bg);
+    color:var(--act-ink);
+    border-radius:6px;
+    padding:1px 3px;
+    font-weight:500;
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+  }
+
+  .peek{
+    display:none;
+    width:100%;font-family:inherit;cursor:pointer;
+    border:1px dashed var(--line-strong);background:var(--surface-2);
+    color:var(--muted);font-size:13.5px;font-weight:600;
+    padding:12px;border-radius:10px;text-align:center;
+  }
+  .peek:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  body.memorize .card:not(.revealed) .detail{display:none}
+  body.memorize .card:not(.revealed) .peek{display:block}
+
+  footer{
+    margin-top:26px;text-align:center;color:var(--faint);
+    font-size:12.5px;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">EMT-2 · 中級救護技術員</p>
+    <h1>二評背誦卡</h1>
+    <p class="sub">創傷／非創傷二次評估 — 由上而下,依身體部位分段記憶。</p>
+    <span class="legend"><span class="act">（橘底）</span> 為動作</span>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="deckSeg" role="group" aria-label="選擇評估類型">
+      <button data-deck="trauma" aria-pressed="true"><span class="dot"></span>創傷二評</button>
+      <button data-deck="nontrauma" aria-pressed="false"><span class="dot"></span>非創傷二評</button>
+    </div>
+    <div class="seg" id="modeSeg" role="group" aria-label="選擇模式">
+      <button data-mode="read" aria-pressed="true">閱讀</button>
+      <button data-mode="memorize" aria-pressed="false">背誦</button>
+    </div>
+  </div>
+
+  <div class="deck-head">
+    <h2 id="deckTitle">創傷二評</h2>
+    <span class="flow">由上而下 ↓</span>
+  </div>
+  <p class="deck-note" id="deckNote"></p>
+
+  <ol class="deck" id="deck"></ol>
+
+  <footer>共 4 個步驟 · 點卡片可在背誦模式下顯示內容<br>文字內容一字未動,括弧（　）內為施作動作</footer>
+</div>
+
+<script>
+  const DATA = {
+    trauma: {
+      title:"創傷二評",
+      note:"觸診 / 視診 / 聽診並用,從頭部逐段檢查至四肢。",
+      cards:[
+        {region:"頭", name:"頭部", tag:"觸診・視診",
+         lines:["觸診頭部有無傷口、對稱（手由枕骨、前額-顴骨-下頷骨），是否有耳漏、鼻漏（筆燈照）。"]},
+        {region:"胸", name:"胸部", tag:"視診・聽診・觸診",
+         lines:["視診胸部是否有瘀傷、傷口、呼吸起伏是否對稱，聽診肺音是否對稱清晰（右支氣管-左支氣管-左肺底-右肺底），鎖骨、上胸、下胸是否穩固（手掌貼著）。"]},
+        {region:"腹", name:"腹部", tag:"視診・觸診",
+         lines:["視診腹部是否有瘀傷、傷口、腫脹，觸診是否壓痛、反彈痛。"]},
+        {region:"肢", name:"四肢", tag:"視診・觸診",
+         lines:["檢查四肢是否有瘀傷、傷口、壓痛、畸形（手掌遇關節打開），上肢及下肢是否對稱。"]}
+      ]
+    },
+    nontrauma: {
+      title:"非創傷二評",
+      note:"由頸部氣管開始,逐段檢查至上、下肢並做感覺與痛覺測試。",
+      cards:[
+        {region:"頸", name:"氣管・頸靜脈", tag:"檢查",
+         lines:["檢查氣管是否偏移、頸靜脈是否怒張。"]},
+        {region:"胸", name:"胸部", tag:"視診・聽診",
+         lines:["視診胸部呼吸起伏是否對稱，聽診肺音是否對稱清晰（右肺尖-左肺尖-左肺底-右肺底）。"]},
+        {region:"腹", name:"腹部", tag:"視診・觸診",
+         lines:["視診腹部是否腫脹，觸診是否壓痛、反彈痛（右上腹-左上腹-左下腹-右下腹）。"]},
+        {region:"肢", name:"上肢・下肢", tag:"觸診・感覺・痛覺",
+         lines:[
+           "檢查上肢是否有水腫、浮腫、紅疹、紫斑、針孔、瘻管（手要壓），先生你有感覺到我在摸你的手嗎？你可以動一下嗎？痛覺測試、",
+           "檢查下肢是否有水腫、浮腫、紅疹、紫斑、針孔、瘻管（手要壓），先生你有感覺到我在摸你的腳嗎？你可以動一下嗎？痛覺測試"
+         ]}
+      ]
+    }
+  };
+
+  const acc = {trauma:"var(--trauma)", nontrauma:"var(--nontrauma)"};
+  const accSoft = {trauma:"var(--trauma-soft)", nontrauma:"var(--nontrauma-soft)"};
+
+  function fmt(t){
+    return t.replace(/（[^）]*）/g, m => '<span class="act">'+m+'</span>');
+  }
+
+  const deckEl = document.getElementById("deck");
+  const titleEl = document.getElementById("deckTitle");
+  const noteEl = document.getElementById("deckNote");
+  const root = document.documentElement;
+
+  let current = "trauma";
+
+  function render(key){
+    const d = DATA[key];
+    root.style.setProperty("--accent", acc[key]);
+    root.style.setProperty("--accent-soft", accSoft[key]);
+    titleEl.textContent = d.title;
+    noteEl.textContent = d.note;
+    deckEl.innerHTML = d.cards.map((c,i)=>`
+      <li class="card">
+        <div class="rail">
+          <div class="badge">${c.region}</div>
+          <div class="step-no">STEP</div>
+        </div>
+        <div class="body">
+          <div class="region">
+            <span class="name">${c.name}</span>
+            <span class="tag">${c.tag}</span>
+          </div>
+          <div class="detail">${c.lines.map(l=>`<p>${fmt(l)}</p>`).join("")}</div>
+          <button class="peek" type="button">點擊顯示內容</button>
+        </div>
+      </li>
+    `).join("");
+    deckEl.querySelectorAll(".card").forEach(card=>{
+      card.querySelector(".peek").addEventListener("click",()=>card.classList.add("revealed"));
+    });
+  }
+
+  document.getElementById("deckSeg").addEventListener("click",e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    current = b.dataset.deck;
+    document.querySelectorAll("#deckSeg button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+    render(current);
+  });
+
+  document.getElementById("modeSeg").addEventListener("click",e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    document.querySelectorAll("#modeSeg button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+    document.body.classList.toggle("memorize", b.dataset.mode==="memorize");
+    deckEl.querySelectorAll(".card.revealed").forEach(c=>c.classList.remove("revealed"));
+  });
+
+  render(current);
+</script>
+</body>
+</html>
